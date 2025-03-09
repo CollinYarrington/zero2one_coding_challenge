@@ -12,7 +12,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login.store'), {
+    form.post(route('auth.store'), {
         onFinish: () => form.reset('password'),
     });
 };
@@ -45,7 +45,6 @@ const submit = () => {
                         required
                         autofocus
                         v-model="form.password"
-                        placeholder="email@example.com"
                         :error="form.errors.password"
                     />
                     <InputError :message="form.errors.password" />
