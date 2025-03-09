@@ -1,15 +1,18 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\WatchListController;
+use App\Http\Middleware\Authenticated;
 use Illuminate\Support\Facades\Route;
 
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return to_route('login.attempt');
+    return to_route('auth.create');
 });
 
-Route::group(['prefix' => 'login', 'as' => 'login.'], function () {
-    Route::get('/', [AuthenticationController::class, 'create']);
-    Route::post('/', [AuthenticationController::class, 'store'])->name('attempt');
+Route::group(['as' => 'auth.'], function () {
+    Route::get('/login', [AuthenticationController::class, 'create'])->name('create');
+    Route::post('/login', [AuthenticationController::class, 'store'])->name('store');
 });
