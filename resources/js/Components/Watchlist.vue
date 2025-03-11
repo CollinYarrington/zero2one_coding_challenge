@@ -107,7 +107,7 @@ defineExpose({ addToWatchlist, deleteFromWatchlist });
             <p class="bg-white absolute translate-x-10 translate-y-[-13px]">Watch List</p>
         </div>        
         <div class="border p-5 rounded">
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
+            <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-5">
                     <div class="bg-white col-span-1 rounded-xl p-5" v-for="(item, index) in watchlist?.data" :key="index">
                         <div class="flex justify-center">
                             <p class="text-pretty font-extrabold">

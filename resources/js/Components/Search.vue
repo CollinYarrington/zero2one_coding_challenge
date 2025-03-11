@@ -86,8 +86,6 @@ watch(() => props.userFeedback, (feedback) => {
         }
     }
 });
-
-
 </script>
 
 <template>
@@ -115,7 +113,7 @@ watch(() => props.userFeedback, (feedback) => {
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
+                <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-5">
                     <div v-for="(item, index) in resultsFound?.data?.search" :key="index" class="bg-white col-span-1 rounded-xl p-5 border shadow-2xl">
                         <div class="flex justify-center">
                             <p class="text-pretty font-extrabold">
