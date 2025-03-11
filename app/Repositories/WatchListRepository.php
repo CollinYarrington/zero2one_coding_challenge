@@ -30,6 +30,6 @@ class WatchlistRepository extends BaseRepository
 
     public function getWatchlist(User $user)
     {
-        return $user->watchlist();
+        return $user->watchlist()->get();
     }
 }
