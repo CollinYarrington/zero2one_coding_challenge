@@ -25,11 +25,15 @@ class WatchlistRepository extends BaseRepository
     public function deleteFromWatchlist(User $user, $imdb_id)
     {
         $user->watchlist()->where('imdb_id', $imdb_id)->delete();
-        // return $this->getPaginatedWatchlist($user, $items_per_page, $page);
     }
 
     public function getWatchlist(User $user)
     {
         return $user->watchlist()->get();
+    }
+
+    public function purgeWatchlist()
+    {
+        return $this->truncate();
     }
 }
