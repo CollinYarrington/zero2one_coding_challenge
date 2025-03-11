@@ -6,10 +6,10 @@ use App\Http\Requests\AddToWatchlistRequest;
 use App\Models\Watchlist;
 use App\Repositories\WatchlistRepository;
 use App\Services\OmdbService;
-use App\Services\WatchlistService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class MoviesController extends Controller
 {
@@ -66,6 +66,13 @@ class MoviesController extends Controller
             'status' => 'success',
             'message' => 'Removed from watchlist',
             'watchlist' => $watchlist,
+        ]);
+    }
+
+    public function view($imdb_id)
+    {
+        return Inertia::render('Dashboard/View', [
+            'movie' => $this->omdbService->getAdditionalInfo($imdb_id)
         ]);
     }
 }
