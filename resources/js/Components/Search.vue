@@ -126,7 +126,7 @@ watch(resultsFound, (update)=>{
                             View
                         </Link>
                         <ButtonPrimary @click="addToWatchlist(item)" class="bg-yellow-200 hover:scale-110">
-                            <BookmarkIcon class="h-5"/>
+                            <BookmarkIcon class="h-6"/>
                         </ButtonPrimary>
                     </div>
                 </div>
