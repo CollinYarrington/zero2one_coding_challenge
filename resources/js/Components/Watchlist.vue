@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import ButtonPrimary from './Ui/Button/ButtonPrimary.vue';
-import { TrashIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, ArrowLeftIcon, ArrowRightIcon, EyeIcon } from '@heroicons/vue/24/solid';
+import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     newWatchlistItem: Object,
@@ -18,9 +19,12 @@ const addToWatchlist = async (movie) => {
     try {
         var response = await axios.post(route('movie.watchlist.add'), movie);
         userFeedback.value = response.data;
-           if (response.status == 200) {
-                getWatchList();
-           }
+        userFeedback.value.imdb_id = movie.imdb_id;
+        userFeedback.value.action = 'added';
+        
+        if (userFeedback.value.status == 'success') {
+            getWatchList();
+        }
         
     } catch (error) {
         if (error.response && error.response.status === 422) { 
@@ -46,7 +50,6 @@ const getWatchList = async (url = route('movie.watchlist')) => {
     try {
         var response = await axios.get(url);
         watchlist.value = response.data.watchlist;
-        console.log(watchlist.value);
         
     } catch (error) {
         if (error.response && error.response.status === 422) { 
@@ -65,17 +68,17 @@ const getWatchList = async (url = route('movie.watchlist')) => {
     }
 };
 
-const removeFromWatchlist = async (movie) => {
+const deleteFromWatchlist = async (movie) => {
     try {
         var response = await axios.post(route('movie.watchlist.delete'), { movie: movie, page: watchlist?.current_page });
         watchlist.value = response.data.watchlist;
         userFeedback.value = {
             status: response.data.status,
             message: response.data.message,
+            imdb_id: movie.imdb_id,
+            action: 'deleted'
         };
-        console.log(userFeedback.value);
         emit('userFeedback', userFeedback.value)
-        console.log(watchlist.value);
         
     } catch (error) {
         if (error.response && error.response.status === 422) { 
@@ -96,7 +99,7 @@ const removeFromWatchlist = async (movie) => {
 
 onMounted(() => getWatchList());
 
-defineExpose({ addToWatchlist });
+defineExpose({ addToWatchlist, deleteFromWatchlist });
 </script>
 <template>
     <div class="bg-white p-5">
@@ -128,11 +131,11 @@ defineExpose({ addToWatchlist });
                         </p>
                     </div>
                     
-                    <div class="flex justify-center align-middle">
-                        <!-- <Link :href="route('movie.view',{imdbID: item.imdbID})">
-                            View
-                        </Link> -->
-                        <ButtonPrimary class="bg-red-400" @click="removeFromWatchlist(item)" title="Remove movie from watchlist">
+                    <div class="flex justify-center align-middle gap-5">
+                        <Link :href="route('movie.view',{'imdb_id': item.imdb_id})" class="bg-blue-400 rounded border px-2">
+                            <EyeIcon class="h-6"/>
+                        </Link>
+                        <ButtonPrimary class="bg-red-400" @click="deleteFromWatchlist(item)" title="Remove movie from watchlist">
                             <TrashIcon class="h-6"/>
                         </ButtonPrimary>
                     </div>

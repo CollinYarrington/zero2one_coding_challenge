@@ -4,12 +4,14 @@ import TextInput from "./Ui/Input/InputText.vue";
 import ButtonPrimary from "./Ui/Button/ButtonPrimary.vue";
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
-import { BookmarkIcon } from '@heroicons/vue/24/solid';
+import { ArrowLeftIcon, ArrowRightIcon, BookmarkIcon, EyeIcon, TrashIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
+    userFeedback: Object,
     placeholder: String
 });
-const emit = defineEmits(['updateWatchlist'])
+
+const emit = defineEmits(['addToWatchlist', 'deleteFromWatchlist'])
 const loading = ref(false);
 const pageNumber = ref(1);
 const totalPageCount = ref(0);
@@ -61,11 +63,29 @@ const updateListing = async () => {
 };
 
 const addToWatchlist = (item) => {
-    emit('updateWatchlist', item);
+    emit('addToWatchlist', item);
+};
+
+const deleteFromWatchlist = (item) => {
+    emit('deleteFromWatchlist', item);
 };
 
 watch(resultsFound, (update)=>{
     totalPageCount.value = Math.ceil((update.data?.totalResults ?? 0) / 10);
+});
+
+watch(() => props.userFeedback, (feedback) => {
+    console.log(feedback);
+    if (feedback.status == 'success') {
+        const movie = resultsFound.value.data?.search.find(item => item.imdb_id === feedback.imdb_id);
+        if (movie) {
+            if (feedback.action == 'deleted'){
+                movie.on_watchlist = false;
+            } else if(feedback.action == 'added'){
+                movie.on_watchlist = true;
+            }
+        }
+    }
 });
 
 
@@ -120,13 +140,23 @@ watch(resultsFound, (update)=>{
                         </p>
                     </div>
                     
-                    <div class="flex justify-center align-middle pt-5">
-                        <!-- route('movie.view',{imdbID: item.imdbID}) -->
-                        <Link :href="''">
-                            View
+                    <div class="flex justify-center align-middle pt-5 gap-5">
+                        <Link :href="route('movie.view',{'imdb_id': item.imdb_id})" class="bg-blue-400 rounded border px-2">
+                            <EyeIcon class="h-6"/>
                         </Link>
-                        <ButtonPrimary @click="addToWatchlist(item)" class="bg-yellow-200 hover:scale-110">
+
+                        <ButtonPrimary 
+                        v-if="!item.on_watchlist"
+                        @click="addToWatchlist(item)" 
+                        class="bg-yellow-400">
                             <BookmarkIcon class="h-6"/>
+                        </ButtonPrimary>
+
+                        <ButtonPrimary 
+                        v-else
+                        @click="deleteFromWatchlist(item)" 
+                        class="bg-red-400">
+                            <TrashIcon class="h-6"/>
                         </ButtonPrimary>
                     </div>
                 </div>
@@ -135,11 +165,11 @@ watch(resultsFound, (update)=>{
         <div v-if="resultsFound?.data?.totalResults">
             <p class="text-center">Pages:</p>
             <div class="flex justify-center items-center bg-white w-full p-1 rounded-xl">
-                <ButtonPrimary @click="previousPage" class="bg-white text-2xl"><</ButtonPrimary>
+                <ButtonPrimary @click="previousPage" class="bg-white text-2xl"><ArrowLeftIcon class="h-6"/></ButtonPrimary>
                 <p>
                     {{ pageNumber }} / {{ totalPageCount ?? 0 }}
                 </p>
-                <ButtonPrimary @click="nextPage" class="bg-white text-2xl">></ButtonPrimary>
+                <ButtonPrimary @click="nextPage" class="bg-white text-2xl"><ArrowRightIcon class="h-6"/></ButtonPrimary>
             </div>
         </div>
         

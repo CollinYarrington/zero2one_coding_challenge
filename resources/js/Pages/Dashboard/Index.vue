@@ -10,6 +10,9 @@ const watchlist = ref(null);
 const invokeAddToWatchlist = (movie) => {
     watchlist.value.addToWatchlist(movie);
 };
+const invokeDeleteFromWatchlist = (movie) => {
+    watchlist.value.deleteFromWatchlist(movie);
+};
 
 const userFeedback = ref();
 
@@ -20,6 +23,9 @@ const userFeedback = ref();
         <Watchlist 
         ref="watchlist"
         @userFeedback="(feedback) => userFeedback = feedback" />
-        <Search @updateWatchlist="invokeAddToWatchlist"/>
+        <Search 
+        @addToWatchlist="invokeAddToWatchlist" 
+        @deleteFromWatchlist="invokeDeleteFromWatchlist"
+        :userFeedback="userFeedback" />
     </AppLayout>
 </template>
