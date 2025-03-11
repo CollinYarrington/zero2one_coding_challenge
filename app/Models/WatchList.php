@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class WatchList extends Model
+class Watchlist extends Model
 {
     protected $fillable = [
         'user_id',
@@ -18,4 +20,9 @@ class WatchList extends Model
         'runtime',
         'genre'
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
