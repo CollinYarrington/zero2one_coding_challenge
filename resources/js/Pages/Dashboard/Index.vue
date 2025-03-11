@@ -1,17 +1,25 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '../../Layouts/AppLayout.vue';
 import Search from '../../Components/Search.vue';
-import WatchList from '../../Components/Watchlist.vue';
+import Watchlist from '../../Components/Watchlist.vue';
 import { ref } from 'vue';
+import Alerts from '../../Components/Alerts.vue';
 
-const newWatchListItem = ref();
+const watchlist = ref(null);
+const invokeAddToWatchlist = (movie) => {
+    watchlist.value.addToWatchlist(movie);
+};
 
+const userFeedback = ref();
 
 </script>
 <template>
     <AppLayout>
-        <WatchList :newWatchListItem="newWatchListItem" />
-        <Search @updateWatchList="(item) => newWatchListItem = item"/>
+        <Alerts :feedback="userFeedback" />
+        <Watchlist 
+        ref="watchlist"
+        @userFeedback="(feedback) => userFeedback = feedback" />
+        <Search @updateWatchlist="invokeAddToWatchlist"/>
     </AppLayout>
 </template>

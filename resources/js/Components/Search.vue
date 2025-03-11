@@ -1,14 +1,15 @@
 <script setup>
-import { useForm } from "@inertiajs/vue3";
+import { Link, useForm } from "@inertiajs/vue3";
 import TextInput from "./Ui/Input/InputText.vue";
 import ButtonPrimary from "./Ui/Button/ButtonPrimary.vue";
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
+import { BookmarkIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
     placeholder: String
 });
-const emit = defineEmits(['updateWatchList'])
+const emit = defineEmits(['updateWatchlist'])
 const loading = ref(false);
 const pageNumber = ref(1);
 const totalPageCount = ref(0);
@@ -59,9 +60,8 @@ const updateListing = async () => {
     .finally(() => loading.value = false);
 };
 
-const addToWatchList = (item) => {
-    console.log(item);
-    emit('updateWatchList', item);
+const addToWatchlist = (item) => {
+    emit('updateWatchlist', item);
 };
 
 watch(resultsFound, (update)=>{
@@ -97,7 +97,7 @@ watch(resultsFound, (update)=>{
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
-                    <div v-for="(item, index) in resultsFound?.data?.search" :key="index" class="bg-white col-span-1 rounded-xl p-5">
+                    <div v-for="(item, index) in resultsFound?.data?.search" :key="index" class="bg-white col-span-1 rounded-xl p-5 border shadow-2xl">
                         <div class="flex justify-center">
                             <p class="text-pretty font-extrabold">
                                 {{ item.title }}
@@ -116,16 +116,17 @@ watch(resultsFound, (update)=>{
                             Year: {{ item.year }}
                         </p>
                         <p class="text-pretty">
-                            Year: {{ item.genre }}
+                            Genre: {{ item.genre }}
                         </p>
                     </div>
                     
-                    <div class="flex justify-center align-middle">
-                        <!-- <Link :href="route('movie.view',{imdbID: item.imdbID})">
+                    <div class="flex justify-center align-middle pt-5">
+                        <!-- route('movie.view',{imdbID: item.imdbID}) -->
+                        <Link :href="''">
                             View
-                        </Link> -->
-                        <ButtonPrimary @click="addToWatchList(item)">
-                            Add To Watch List
+                        </Link>
+                        <ButtonPrimary @click="addToWatchlist(item)" class="bg-yellow-200 hover:scale-110">
+                            <BookmarkIcon class="h-5"/>
                         </ButtonPrimary>
                     </div>
                 </div>

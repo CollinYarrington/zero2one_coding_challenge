@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MoviesController;
-use App\Http\Controllers\WatchListController;
+use App\Http\Controllers\WatchlistController;
 use App\Http\Middleware\Authenticated;
 use Illuminate\Support\Facades\Route;
 
@@ -30,7 +30,9 @@ Route::group(['middleware' => [Authenticated::class]], function () {
         // Route::get('/view/{imdbID}', [MoviesController::class, 'view'])->name('view');
         Route::post('/search', [MoviesController::class, 'search'])->name('search');
 
-        Route::post('/watch-list/add', [MoviesController::class, 'addToWatchList'])->name('add-to-watch-list');
+        Route::get('/watch-list', [MoviesController::class, 'getWatchList'])->name('watchlist');
+        Route::post('/watch-list/add', [MoviesController::class, 'addToWatchlist'])->name('watchlist.add');
+        Route::post('/watch-list/delete', [MoviesController::class, 'deleteFromWatchlist'])->name('watchlist.delete');
     });
 });
 

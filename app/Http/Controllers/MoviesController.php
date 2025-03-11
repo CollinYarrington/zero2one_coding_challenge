@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddToWatchListRequest;
-use App\Models\WatchList;
+use App\Http\Requests\AddToWatchlistRequest;
+use App\Models\Watchlist;
+use App\Repositories\WatchlistRepository;
 use App\Services\OmdbService;
-use App\Services\WatchListService;
+use App\Services\WatchlistService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class MoviesController extends Controller
 {
-    protected $omdbService, $watchListService;
+    protected $omdbService, $watchlistRepository;
 
-    public function __construct(OmdbService $omdbService, WatchListService $watchListService)
+    public function __construct(OmdbService $omdbService, WatchlistRepository $watchlistRepository)
     {
-        $this->watchListService = $watchListService;
+        $this->watchlistRepository = $watchlistRepository;
         $this->omdbService = $omdbService;
     }
 
@@ -30,11 +31,41 @@ class MoviesController extends Controller
         return response()->json(['message' => 'Success', 'data' => $searchResults]);
     }
 
-    public function addToWatchList(AddToWatchListRequest $request)
+    public function addToWatchlist(AddToWatchlistRequest $request)
     {
-        if ($this->watchListService->addToWatchList($request)) {
-            return response()->json(["status" => "success", "message" => "Added to watch list"], Response::HTTP_OK);
+        if ($this->watchlistRepository->addToWatchlist($request->all())) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Added to watchlist',
+            ], Response::HTTP_OK);
         }
-        return response()->json(["status" => "", "message" => "Failed to add movie to your watch list"], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to add movie to your watchlist'
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function getWatchList(Request $request)
+    {
+        $page = $request->input('page', 1);
+        $watchlist = $this->watchlistRepository->getPaginatedWatchlist($request->user(), 5, $page);
+
+        return response()->json([
+            'watchlist' => $watchlist,
+        ]);
+    }
+
+    public function deleteFromWatchlist(Request $request)
+    {
+        $movie = $request->input('movie');
+        Log::info($request->input('movie'));
+        $page = $request->input('page', 1);
+        $watchlist = $this->watchlistRepository->deleteFromWatchlist($request->user(), $movie['imdb_id'], 5, $page);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Removed from watchlist',
+            'watchlist' => $watchlist,
+        ]);
     }
 }

@@ -1,49 +1,130 @@
 <script setup>
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import ButtonPrimary from './Ui/Button/ButtonPrimary.vue';
+import { TrashIcon, ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
-    newWatchListItem: Object,
-})
+    newWatchlistItem: Object,
+});
+
+const emit = defineEmits(['userFeedback']);
+
 const loading = ref(false);
-
-watch(() => props.newWatchListItem, (movie) => addToWatchList(movie));
-
-const addToWatchList = (movie) => {
-    console.log(movie);
+const userFeedback = ref();
+const addToWatchlist = async (movie) => {
     loading.value = true;
-    axios.post(route('movie.add-to-watch-list'), movie).then((response) => {
-        console.log(response);
-    }).finally(() => loading.value = false);
+
+    try {
+        var response = await axios.post(route('movie.watchlist.add'), movie);
+        userFeedback.value = response.data;
+           if (response.status == 200) {
+                getWatchList();
+           }
+        
+    } catch (error) {
+        if (error.response && error.response.status === 422) { 
+            const errors = error.response.data.errors;
+            var messages = [];
+            for (const [key, value] of Object.entries(errors)) {
+                messages.push(value[0]);
+            }
+
+            var restructuredResponse = {
+                status: 'error',
+                messages: messages,
+            }
+            userFeedback.value = restructuredResponse;
+        }
+    }
+    emit('userFeedback', userFeedback.value)
+    loading.value = false;
+};
+
+const watchlist = ref();
+const getWatchList = async (url = route('movie.watchlist')) => {
+    try {
+        var response = await axios.get(url);
+        watchlist.value = response.data.watchlist;
+        console.log(watchlist.value);
+        
+    } catch (error) {
+        if (error.response && error.response.status === 422) { 
+            const errors = error.response.data.errors;
+            var messages = [];
+            for (const [key, value] of Object.entries(errors)) {
+                messages.push(value[0]);
+            }
+
+            var restructuredResponse = {
+                status: 'error',
+                messages: messages,
+            }
+            userFeedback.value = restructuredResponse;
+        }
+    }
+};
+
+const removeFromWatchlist = async (movie) => {
+    try {
+        var response = await axios.post(route('movie.watchlist.delete'), { movie: movie, page: watchlist?.current_page });
+        watchlist.value = response.data.watchlist;
+        userFeedback.value = {
+            status: response.data.status,
+            message: response.data.message,
+        };
+        console.log(userFeedback.value);
+        emit('userFeedback', userFeedback.value)
+        console.log(watchlist.value);
+        
+    } catch (error) {
+        if (error.response && error.response.status === 422) { 
+            const errors = error.response.data.errors;
+            var messages = [];
+            for (const [key, value] of Object.entries(errors)) {
+                messages.push(value[0]);
+            }
+
+            var restructuredResponse = {
+                status: 'error',
+                messages: messages,
+            }
+            userFeedback.value = restructuredResponse;
+        }
+    }
 }
+
+onMounted(() => getWatchList());
+
+defineExpose({ addToWatchlist });
 </script>
 <template>
     <div class="bg-white p-5">
         <div class="relative">
             <p class="bg-white absolute translate-x-10 translate-y-[-13px]">Watch List</p>
-        </div>
-        <!-- v-for="(item, index) in resultsFound?.data?.search" :key="index" -->
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
-                    <div class="bg-white col-span-1 rounded-xl p-5">
+        </div>        
+        <div class="border p-5 rounded">
+            <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
+                    <div class="bg-white col-span-1 rounded-xl p-5" v-for="(item, index) in watchlist?.data" :key="index">
                         <div class="flex justify-center">
                             <p class="text-pretty font-extrabold">
-                                {{ newWatchListItem?.title }}
+                                {{ item?.title }}
                             </p>
                         </div>
                         
                         <div class="flex justify-center align-middle h-80 overflow-hidden bg-black">
-                            <img :src="newWatchListItem?.poster" :alt="newWatchListItem?.title" class="h-full"/>
+                            <img :src="item?.poster" :alt="item?.title" class="h-full"/>
                     </div>
                     
                     <div>
                         <p class="text-pretty">
-                            Type: {{ newWatchListItem?.type }}
+                            Type: {{ item?.type }}
                         </p>
                         <p class="text-pretty">
-                            Year: {{ newWatchListItem?.year }}
+                            Year: {{ item?.year }}
                         </p>
                         <p class="text-pretty">
-                            Year: {{ newWatchListItem?.genre }}
+                            Genre: {{ item?.genre }}
                         </p>
                     </div>
                     
@@ -51,14 +132,24 @@ const addToWatchList = (movie) => {
                         <!-- <Link :href="route('movie.view',{imdbID: item.imdbID})">
                             View
                         </Link> -->
-                        <!-- <ButtonPrimary @click="addToWatchList(item)">
-                            Add To Watch List
-                        </ButtonPrimary> -->
+                        <ButtonPrimary class="bg-red-400" @click="removeFromWatchlist(item)" title="Remove movie from watchlist">
+                            <TrashIcon class="h-6"/>
+                        </ButtonPrimary>
                     </div>
                 </div>
             </div>
-        <div class="border p-5 rounded">
-            <p>No Movies have been added to your watch list yet</p>
+            <div class="flex justify-center" v-if="watchlist?.total">
+                <ButtonPrimary v-if="watchlist?.current_page > 1" @click="getWatchList(watchlist?.prev_page_url)" title="Previous page">
+                    <ArrowLeftIcon class="h-5"/>
+                </ButtonPrimary>
+
+                {{ watchlist?.current_page }}/{{ watchlist?.last_page }}
+                
+                <ButtonPrimary v-if="watchlist?.current_page < watchlist?.last_page" @click="getWatchList(watchlist?.next_page_url)" title="Next page">
+                    <ArrowRightIcon class="h-5"/>
+                </ButtonPrimary>
+            </div>
+            <p v-else>No Movies have been added to your watch list yet</p>
         </div>
     </div>
 </template>
