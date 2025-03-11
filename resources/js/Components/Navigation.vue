@@ -10,24 +10,6 @@ const isActiveRoute = (routeVal) => {
 }
 
 const navItems = ref([
-    // {
-    //     route: route('watch-list.list'),
-    //     isActive: isActiveRoute('watch-list.list'),
-    //     name: 'Watch List',
-    //     method: 'get',
-    // },
-    // {
-    //     route: route('movie.list'),
-    //     isActive: isActiveRoute('movie.list'),
-    //     name: 'Movie List',
-    //     method: 'get',
-    // },
-    // {
-    //     route: route('auth.destroy'),
-    //     isActive: isActiveRoute('auth.destroy'),
-    //     name: 'Logout',
-    //     method: 'post',
-    // },
     {
         route: route('auth.destroy'),
         isActive: isActiveRoute('auth.destroy'),
@@ -45,8 +27,9 @@ const navItems = ref([
                 <Link 
                 v-for="(item, index) in navItems" :key="index"
                 :href="item.route" 
+                :method="item.method"
                 :class="[
-                    'text-white h-16 pt-5 border-t-4 border-black hover:border-white',
+                    'text-white h-16 border-t-4 border-black hover:border-white',
                     {
                         '!border-white': item.isActive,
                     }

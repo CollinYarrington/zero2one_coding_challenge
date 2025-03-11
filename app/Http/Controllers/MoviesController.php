@@ -47,8 +47,9 @@ class MoviesController extends Controller
 
     public function getWatchList(Request $request)
     {
+        $user = $request->user();
         $page = $request->input('page', 1);
-        $watchlist = $this->watchlistRepository->getPaginatedWatchlist($request->user(), 5, $page);
+        $watchlist = $this->watchlistRepository->getPaginatedWatchlist($user, 5, $page);
 
         return response()->json([
             'watchlist' => $watchlist,
@@ -57,10 +58,12 @@ class MoviesController extends Controller
 
     public function deleteFromWatchlist(Request $request)
     {
+        $user = $request->user();
         $movie = $request->input('movie');
-        Log::info($request->input('movie'));
         $page = $request->input('page', 1);
-        $watchlist = $this->watchlistRepository->deleteFromWatchlist($request->user(), $movie['imdb_id'], 5, $page);
+
+        $this->watchlistRepository->deleteFromWatchlist($request->user(), $movie['imdb_id']);
+        $watchlist = $this->watchlistRepository->getPaginatedWatchlist($user, 5, $page);
 
         return response()->json([
             'status' => 'success',
@@ -71,8 +74,9 @@ class MoviesController extends Controller
 
     public function view($imdb_id)
     {
+        $movie = $this->omdbService->getAdditionalInfo($imdb_id);
         return Inertia::render('Dashboard/View', [
-            'movie' => $this->omdbService->getAdditionalInfo($imdb_id)
+            'movie' => $movie
         ]);
     }
 }

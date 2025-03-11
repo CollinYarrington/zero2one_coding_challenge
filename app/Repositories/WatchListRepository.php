@@ -22,10 +22,10 @@ class WatchlistRepository extends BaseRepository
         return $user->watchlist()->orderBy('created_at', 'desc')->paginate($items_per_page, ['*'], 'page', $page);
     }
 
-    public function deleteFromWatchlist(User $user, $imdb_id, $items_per_page = 5, $page)
+    public function deleteFromWatchlist(User $user, $imdb_id)
     {
         $user->watchlist()->where('imdb_id', $imdb_id)->delete();
-        return $this->getPaginatedWatchlist($user, $items_per_page, $page);
+        // return $this->getPaginatedWatchlist($user, $items_per_page, $page);
     }
 
     public function getWatchlist(User $user)

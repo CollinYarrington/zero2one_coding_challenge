@@ -75,9 +75,8 @@ watch(resultsFound, (update)=>{
 });
 
 watch(() => props.userFeedback, (feedback) => {
-    console.log(feedback);
     if (feedback.status == 'success') {
-        const movie = resultsFound.value.data?.search.find(item => item.imdb_id === feedback.imdb_id);
+        const movie = resultsFound.value.data?.search?.find(item => item.imdb_id === feedback.imdb_id);
         if (movie) {
             if (feedback.action == 'deleted'){
                 movie.on_watchlist = false;

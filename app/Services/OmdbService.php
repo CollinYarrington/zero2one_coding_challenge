@@ -42,7 +42,6 @@ class OmdbService
                 ]
             ]);
             $currentWatchlist = $this->watchlistRepository->getWatchlist($request->user());
-            Log::info($currentWatchlist);
             $moviesData = json_decode($response->getBody()->getContents(), false);
             $movies['totalResults'] = $moviesData->totalResults;
             // Adding all the missing fields from the initial API call (rated, plot, runtime, genre).
