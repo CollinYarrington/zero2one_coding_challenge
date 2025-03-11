@@ -39,7 +39,7 @@ const navItems = ref([
 <template>
     <nav class="bg-black px-5">
         <div class="justify-between items-center hidden md:flex">
-            <Link :href="'/'" class="text-white py-6">MW</Link>
+            <Link :href="'/'" class="text-white py-6">Movie Watchlist</Link>
             
             <div class="flex gap-2 justify-center items-start" v-if="page.props.auth.user">
                 <Link 
@@ -59,7 +59,7 @@ const navItems = ref([
 
         <div class="md:hidden">
             <div class="flex justify-between items-center">
-                <Link :href="'/'" class="text-white py-6">MW</Link>
+                <Link :href="'/'" class="text-white py-6">Movie Watchlist</Link>
 
                 <button class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
