@@ -17,13 +17,13 @@ class CreateTestUsersSeeder extends Seeder
         User::create([
             'name' => "John Doe",
             'email' => "john@test.com",
-            'password' => Hash::make("1"),
+            'password' => Hash::make("zero2Hero@1"),
         ]);
 
         User::create([
             'name' => "Jane Doe",
             'email' => "jane@test.com",
-            'password' => Hash::make("1"),
+            'password' => Hash::make("zero2Hero@1"),
         ]);
     }
 }
