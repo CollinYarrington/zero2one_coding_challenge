@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('watch_lists', function (Blueprint $table) {
+        Schema::create('watchlists', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('imdb_id');
@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('runtime');
             $table->string('genre');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
